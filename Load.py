@@ -1,26 +1,26 @@
 class Load:
-    def __init__(self, name, BusObject, powerRating, voltageRating):
+    def __init__(self, name, busObject, powerRating, voltageRating):
         self.name = name
-        self.bus1 = BusObject
-        self.P_rated = powerRating
-        self.V_rated = voltageRating
+        self.bus1 = busObject
+        self.p_rated = powerRating
+        self.v_rated = voltageRating
 
-    #set functions
+    # set functions
     def setName(self, name):
         self.name = name
-    def setbus1(self, BusObject):
-        self.bus1 = BusObject
+    def setbus1(self, busObject):
+        self.bus1 = busObject
     def setPower(self, power):
-        self.P_rated = power
+        self.p_rated = power
     def setvoltage(self, voltageRating):
-        self.V_rated = voltageRating
-    #get functions
+        self.v_rated = voltageRating
+    # get functions
     def getName(self):
         return self.name
     def getbus1(self):
         return self.bus1
 
     def getRatedPower(self):
-        return self.P_rated
+        return self.p_rated
     def getRatedVoltage(self):
-        return self.V_rated
+        return self.v_rated

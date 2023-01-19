@@ -1,5 +1,5 @@
 class Load:
-    def __init__(self, name, BusObject, powerRating, VoltageRating):
+    def __init__(self, name, BusObject, powerRating, voltageRating):
         self.name = name
         self.bus1 = BusObject
         self.P_rated = powerRating

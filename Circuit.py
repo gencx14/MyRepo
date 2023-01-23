@@ -1,4 +1,4 @@
-from Resistor import Resistor #from file resistor import the class called resistor
+from Resistor import Resistor
 from Load import Load
 from VoltageSource import VoltageSource
 
@@ -17,11 +17,10 @@ class Circuit:
         self.BusItems = []
         Circuit.CircuitCount += 1
 
-    def addVsourceElement(self, vsource):
+    def addVsourceElement(self, name, bus1, voltage):
         self.componentCount += 1
-        vsObject = VoltageSource()
-
-        self.vItems.append(vsource)
+        vsObject = VoltageSource(name, bus1, voltage)
+        self.vItems.append(vsObject)
     def addResistorElement(self, name, bus1, bus2, ohms):
         self.componentCount += 1
         self.resistorCount += 1

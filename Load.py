@@ -28,4 +28,6 @@ class Load:
         return self.p_rated
     def getRatedVoltage(self):
         return self.v_rated
-    def getloadRes
+    def getloadResistance(self):
+        return self.loadResistance
+

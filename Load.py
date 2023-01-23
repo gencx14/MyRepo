@@ -1,9 +1,13 @@
 class Load:
+    loadCount = 0
     def __init__(self, name, busObject, powerRating, voltageRating):
         self.name = name
         self.bus1 = busObject
         self.p_rated = powerRating
         self.v_rated = voltageRating
+        self.loadResistance = (voltageRating ** 2) / powerRating
+        Load.loadCount += 1
+
 
     # set functions
     def setName(self, name):
@@ -24,3 +28,4 @@ class Load:
         return self.p_rated
     def getRatedVoltage(self):
         return self.v_rated
+    def getloadRes

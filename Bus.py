@@ -3,11 +3,11 @@ class Bus:
     busCount = 0
     def __init__(self, name):
         Bus.busCount += 1
-        Bus.name = name
+        self.name = name
     def getBusCount(self):
-        return self.busCount
+        return Bus.busCount
     def getName(self):
         return self.name
     def setName(self, name):
-        Bus.name = name
+        self.name = name
 

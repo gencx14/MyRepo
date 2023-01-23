@@ -1,29 +1,38 @@
+from Resistor import Resistor #from file resistor import the class called resistor
+from Load import Load
+from VoltageSource import VoltageSource
+
+
+
+
 class Circuit:
     componentCount = 0
-    v_sourceCount = 0
-    resistorCount = 0
-    loadCount = 0
+    CircuitCount = 0
 
     def __init__(self, name)
         self.name = name
         self.vItems = []
         self.rItems = []
         self.loadItems = []
+        self.BusItems = []
+        Circuit.CircuitCount += 1
 
     def addVsourceElement(self, vsource):
         self.componentCount += 1
-        self.v_sourceCount += 1
+        vsObject = VoltageSource()
+
         self.vItems.append(vsource)
-    def addResistorElement(self, resistor):
+    def addResistorElement(self, name, bus1, bus2, ohms):
         self.componentCount += 1
         self.resistorCount += 1
-        self.rItems.append(resistor)
+        resistorObject = Resistor(name, bus1, bus2, ohms) #creates a resistor object within my circuit object
+        self.rItems.append(resistorObject) #
     def addLoadElement(self, load):
         self.componentCount += 1
         self.loadCount += 1
         self.loadItems.append(load)
-    def getVsourceElement(self, index):
-        return self.vItems[index]
+    def getVsourceElement(self, name):
+        return self.vItems.
     def getResistorElement(self, index):
         return self.rItems[index]
     def getLoadElement(self, index):

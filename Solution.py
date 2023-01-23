@@ -1,6 +1,21 @@
 class Solution:
+
     def __init__(self, circuit):
         self.circuit = circuit
+        self.resistorItems = []
+        self.loadItems = []
+        self.vSourceItems = []
+    def buildCircuit(self):
+        if len(self.circuit.getNumVsourceElements()) == 0:
+            print("no power flow")
+            return
+        elif len(self.circuit.getNumVsourceElements()) == 1:
+            self.vsItems = self.circuit.getVsourceElement(0)
+            self.
+            print("one source component\nVoltage Source = " + str(self.vsItem.getVoltage()) + " volts\n")
+            self.Vsbus = self.vsItem.getBus1()
+
+
     def findCurrent(self):
         # find number of resistive elements
         self.NumImpedances = self.circuit.getNumResistors() + self.circuit.getNumLoads()

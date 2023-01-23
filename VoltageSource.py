@@ -15,5 +15,5 @@ class VoltageSource:
         return self.name
     def getBus1(self):
         return self.bus1
-    def getVolage(self):
+    def getVoltage(self):
         return self.voltage

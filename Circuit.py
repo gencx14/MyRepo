@@ -22,6 +22,18 @@ class Circuit:
         self.componentCount += 1
         self.loadCount += 1
         self.loadItems.append(load)
+    def getVsourceElement(self, index):
+        return self.vItems[index]
+    def getResistorElement(self, index):
+        return self.rItems[index]
+    def getLoadElement(self, index):
+        return self.loadItems[index]
+    def getVitems(self):
+        return self.vItems
+    def getrItems(self):
+        return self.rItems
+    def getloadItems(self):
+        return self.loadItems
 
     def removeVsourceElement(self, vsource):
         self.componentCount -= 1

@@ -1,41 +1,40 @@
 from Resistor import Resistor
 from Load import Load
 from VoltageSource import VoltageSource
-
-
-
-
+from Bus import Bus
 class Circuit:
     componentCount = 0
     CircuitCount = 0
 
-    def __init__(self, name)
+    def __init__(self, name):
         self.name = name
         self.vItems = []
         self.rItems = []
         self.loadItems = []
-        self.BusItems = []
         Circuit.CircuitCount += 1
 
-    def addVsourceElement(self, name, bus1, voltage):
-        self.componentCount += 1
+    def addVsourceElement(self, name, bus_name, voltage):
+        Circuit.componentCount += 1
+        bus1 = Bus(bus_name)
         vsObject = VoltageSource(name, bus1, voltage)
         self.vItems.append(vsObject)
-    def addResistorElement(self, name, bus1, bus2, ohms):
-        self.componentCount += 1
-        self.resistorCount += 1
+    def addResistorElement(self, name, bus1_name, bus2_name, ohms):
+        Circuit.componentCount += 1
+        bus1 = Bus(bus1_name)
+        bus2 = Bus(bus2_name)
         resistorObject = Resistor(name, bus1, bus2, ohms) #creates a resistor object within my circuit object
-        self.rItems.append(resistorObject) #
-    def addLoadElement(self, load):
-        self.componentCount += 1
-        self.loadCount += 1
-        self.loadItems.append(load)
+        self.rItems.append(resistorObject)
+    def addLoadElement(self, name, bus_name, power, voltage):
+        Circuit.componentCount += 1
+        bus1 = Bus(bus_name)
+        loadObject = Load(name, bus1, power, voltage)
+        self.loadItems.append(loadObject)
     def getVsourceElement(self, name):
-        return self.vItems.
-    def getResistorElement(self, index):
-        return self.rItems[index]
-    def getLoadElement(self, index):
-        return self.loadItems[index]
+        return self.vItems[self.vItems.index(name)]
+    def getResistorElement(self, name):
+        return self.rItems[self.rItems.index(name)]
+    def getLoadElement(self, name):
+        return self.loadItems[self.loadItems.index(name)]
     def getVitems(self):
         return self.vItems
     def getrItems(self):
@@ -45,22 +44,19 @@ class Circuit:
 
     def removeVsourceElement(self, vsource):
         self.componentCount -= 1
-        self.v_sourceCount -= 1
         self.vItems.remove(vsource)
     def removeResistorElement(self, resistor):
         self.componentCount -= 1
-        self.resistorCount -= 1
         self.rItems.remove(resistor)
     def removeLoadElement(self, load):
         self.componentCount -= 1
-        self.loadCount -= 1
         self.loadItems.remove(load)
 
     def getNumComponents(self):
-        return self.componentCount
+        return Circuit.componentCount
     def getNumVsourceElements(self):
-        return self.v_sourceCount
+        return VoltageSource.vSourceCount
     def getNumResistors(self):
-        return self.resistorCount
+        return Resistor.resistorCount
     def getNumLoads(self):
-        return self.loadCount
+        return Load.loadCount

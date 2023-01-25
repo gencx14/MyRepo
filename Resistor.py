@@ -1,11 +1,9 @@
 class Resistor:
-    resistorCount = 0
-    def __int__(self, name, bus1, bus2, ohms):
+    def __init__(self, name, bus1, bus2, ohms):
         self.name = name
         self.bus1 = bus1
         self.bus2 = bus2
         self.resistance = ohms
-        Resistor.resistorCount += 1
 
     def setName(self, name):
         self.name = name

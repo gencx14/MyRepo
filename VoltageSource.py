@@ -1,6 +1,6 @@
 class VoltageSource:
     vSourceCount = 0
-    def __int__(self, name, bus1, voltage):
+    def __init__(self, name, bus1, voltage):
         self.name = name
         self.bus1 = bus1
         self.voltage = voltage

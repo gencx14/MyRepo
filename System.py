@@ -14,7 +14,9 @@ class System:
         #make a dictionary for the resistor elements
         self.rItems: Dict[str, Resistor] = dict()
         #make a dictionary for the load elements
-        self.loadItems: Dict[str, Load] = dict()jj
+        self.loadItems: Dict[str, Load] = dict()
+        #make a dictionary for your conductor elements
+        self.conductorItems: Dict[str, Conductor] = dict()
         System.SystemCount += 1
 
     def add_bus(self, bus):
@@ -40,3 +42,10 @@ class System:
         bus1 = Bus(bus_name)
         loadObject = Load(name, bus1, power, voltage)
         self.loadItems.append(loadObject)
+
+    def addConductor(self, name, outerDiameter, gmr, rAC):
+        System.componentCount += 1
+        conductor = Conductor(name, outerDiameter, gmr, rAC)
+
+
+

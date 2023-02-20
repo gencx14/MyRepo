@@ -2,20 +2,21 @@ import math
 import cmath
 import sys
 from Geometry import Geometry
+from Conductor import Conductor
 class TransmissionLineData:
 
-    def __init__(self, name, bundleSize, geometry: Geometry, gmr, diameter, bundleDisance, rAC):
+    def __init__(self, name, bundleSize, geometry: Geometry, conductor: Conductor, bundleDisance):
         self.name = name
         self.num = bundleSize
         self.geom = geometry
         self.d_ab = self.geom.getdab()
         self.d_bc = self.geom.getdbc()
         self.dca = self.geom.getdca()
-        self.d = bundleDisance #distance between conductors in a bundle
-        self.gmr = gmr #gmr in feet
-        self.radius = (diameter/2)/12 #conductor radius in feet
-        self.ohmsPerMile = rAC/(bundleSize) #R = R1/bundlesize      ******THIS MAY NOT BE THE RIGHT UNITS... CHeck if it is per meter or per mile
-        self.rPrime = self.ohmsPerMile / 1609 #ohms per meter R'
+        self.d = bundleDisance          #  distance between conductors in a bundle
+        self.gmr = conductor.getgmr()    #  gmr in feet
+        self.radius = (conductor.getdiameter()/2)/12    #  conductor radius in feet
+        self.ohmsPerMile = conductor.getrAC()/(bundleSize)   #  R = R1/bundlesize      ******THIS MAY NOT BE THE RIGHT UNITS... CHeck if it is per meter or per mile
+        self.rPrime = self.ohmsPerMile / 1609    #  ohms per meter R'
         self.deq = self.geom.getdeq()
         self.w = 2 * cmath.pi * 60                                 #    *******Figure out where to input frequency*******
 
@@ -33,7 +34,7 @@ class TransmissionLineData:
             self.dsc = 1.0941 * (self.radius * self.d**3)**(1/4)
         else:
             print("This program can only handle bundleSizes of 4 or less. Please adjust your input")
-            sys.exit() #ends the program
+            sys.exit()  #   ends the program
 
         self.cPrime = 2*cmath.pi*(8.854*10**(-12))/cmath.log(self.deq / self.dsc) #units of Ferads per meter  C'   ***** Check your units
         self.lPrime = (2*10**(-7)) * cmath.log(self.deq / self.dsl) #inductance per meter H/m L'

@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional
 from Resistor import Resistor
 from Load import Load
-from VoltageSource import VoltageSource
+from Generator import VoltageSource
 from Bus import Bus
 class Circuit:
     componentCount = 0

@@ -24,6 +24,15 @@ class TransformerData:
     def makeZpuPhasor(self, zPCT, xrRatio, vprim, srated): #is it vlow or v primary????
             zTransformerPU = (zPCT / 100) * cmath.exp(cmath.atan(xrRatio) * 1j) * ((vprim**2/srated)/(vprim**2/100))
             return cmath.polar(zTransformerPU)
+    def gettxYpu(self):
+        return self.txYpu
+
+    def gettxRpu(self):
+        return self.txRpu
+
+    def gettxXpu(self):
+        return self.txXpu
+
 
 
 

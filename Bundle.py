@@ -29,3 +29,9 @@ class Bundle:
     def getdsc(self):
         return self.dsc
 
+    def getBundleSize(self):
+        return self.size
+
+    def getBundleDistance(self):
+        return self.bundleDistance
+

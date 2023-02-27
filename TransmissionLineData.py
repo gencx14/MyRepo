@@ -8,7 +8,7 @@ import Constants
 
 class TransmissionLineData:
 
-    def __init__(self, name, bundle: Bundle, geometry: Geometry, conductor: Conductor, length):
+    def __init__(self, name, bundle: Bundle, geometry: Geometry, conductor: Conductor):
         self.name = name
         self.geom = geometry
         self.deq = self.geom.getdeq()

@@ -2,6 +2,7 @@ import ssl
 import cmath
 import math
 
+
 class TransformerData:
     txCount = 0
 
@@ -14,16 +15,19 @@ class TransformerData:
         self.vBaseSecondary = vSecondary
         self.zPct = zPctTransformer
         self.xrRatio = xrRatio
-        self.zPUphasor = [self.makeZpuPhasor(self.zPct, self.xrRatio, self.vPrimary, self.vSecondary, sRated)] #zPUphasor[0] is magnitude while [1] is phase
-        self.zPuRect = cmath.rect(*self.zPUphasor)  #has a list be passed in as multiple argurments to a function... so this is mag and phase
-        self.txRpu = self.zPuRect.real
-        self.txXpu = self.zPuRect.imag
-        self.txYpu = 1/(self.txRpu + 1j*self.txXpu)
+        self.zPUphasor = [self.makeZpuPhasor(self.zPct, self.xrRatio, self.vPrimary, self.vSecondary,
+                                             sRated)]  # zPUphasor[0] is magnitude while [1] is phase
+        self.zPuRect = cmath.rect(
+            *self.zPUphasor)  # has a list be passed in as multiple argurments to a function... so this is mag and phase
+        self.txRpu = self.zPuRect.real()
+        self.txXpu = self.zPuRect.imag()
+        self.txYpu = 1 / (self.txRpu + 1j * self.txXpu)
 
+    def makeZpuPhasor(self, zPCT, xrRatio, vprim, srated):  # is it vlow or v primary????
+        zTransformerPU = (zPCT / 100) * cmath.exp(cmath.atan(xrRatio) * 1j) * (
+                    (vprim ** 2 / srated) / (vprim ** 2 / 100))
+        return cmath.polar(zTransformerPU)
 
-    def makeZpuPhasor(self, zPCT, xrRatio, vprim, srated): #is it vlow or v primary????
-            zTransformerPU = (zPCT / 100) * cmath.exp(cmath.atan(xrRatio) * 1j) * ((vprim**2/srated)/(vprim**2/100))
-            return cmath.polar(zTransformerPU)
     def gettxYpu(self):
         return self.txYpu
 
@@ -32,12 +36,3 @@ class TransformerData:
 
     def gettxXpu(self):
         return self.txXpu
-
-
-
-
-
-
-
-
-

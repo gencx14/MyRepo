@@ -1,6 +1,6 @@
 import math
 class Bundle:
-    def __init__(self, bundleSize, bundleDistance, conductor: Conductor):
+    def __init__(self, name, bundleSize, bundleDistance, conductor: Conductor):
         self.size = bundleSize
         self.bundleDistance = bundleDistance
         self.radius = (conductor.getdiameter() / 2) / 12

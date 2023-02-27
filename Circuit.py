@@ -19,7 +19,7 @@ class Circuit:
         #make a dictionary for the resistor elements
         self.rItems: Dict[str, Resistor] = dict()
         #make a dictionary for the load elements
-        self.loadItems: Dict[str, Load] = dict()jj
+        self.loadItems: Dict[str, Load] = dict()
         Circuit.CircuitCount += 1
 
     def add_bus(self, bus):
@@ -44,6 +44,8 @@ class Circuit:
         bus1 = Bus(bus_name)
         loadObject = Load(name, bus1, power, voltage)
         self.loadItems.append(loadObject)
+
+
     def getVsourceElement(self, name):
         return self.vItems[self.vItems.index(name)]
     def getResistorElement(self, name):

@@ -57,6 +57,7 @@ class System:
         if name not in self.generatorItems.keys():
             self.generatorItems[name] = Generator(name, voltage, bus1)
             self.add_bus(bus1)
+            self.buses[bus1].setBusVoltage(voltage)
             System.componentCount += 1
 
     def addResistorElement(self, name, bus1_name, bus2_name, ohms):
@@ -97,9 +98,9 @@ class System:
             System.componentCount += 1
 
 
-    def addTransmissionLine(self, name: str, bus1: Bus, bus2: Bus, lineData: TransmissionLineData):
+    def addTransmissionLine(self, name: str, bus1, bus2, lineData: TransmissionLineData):
         if name not in self.transmissionlines.keys():
-            self.transmissionlines[name] = TransmissionLine(name, bus1, bus2, lineData)
+            self.transmissionlines[name] = TransmissionLine(name, bus1, bus2, lineData, length)
             self.add_bus(bus1)
             self.add_bus(bus2)
             System.componentCount += 1

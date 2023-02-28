@@ -1,7 +1,7 @@
 class Bus:
     #Class Attribute
     busCount = 0
-    def __init__(self, name):
+    def __init__(self, name): #where should I set the bus voltage
         self.index = Bus.busCount
         Bus.busCount += 1
         self.name = name

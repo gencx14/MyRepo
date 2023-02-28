@@ -7,3 +7,7 @@ class TransmissionLine:
         self.bus1 = bus1
         self.bus2 = bus2
         self.data = lineData
+        self.totalZseries = self.data.zseriesperMile * length
+        self.totalYshunt = self.data.yshuntperMile * length
+        self.totalYseries = 1 / self.totalZseries
+

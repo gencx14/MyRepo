@@ -5,7 +5,6 @@ class Generator:
         self.bus1 = bus1
         self.bus2 = bus2
         self.voltage = voltage
-        self.buses = [self.bus1]
         Generator.vSourceCount += 1
 
     def setName(self, name):

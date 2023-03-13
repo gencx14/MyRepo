@@ -17,7 +17,7 @@ class System:
     componentCount = 0
     SystemCount = 0
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, Pbase, Vbase):
         self.name: str = name
         self.buses_order: List[str] = list() #makes a list of the bus order and ensures that they are entered as strings
         #make a dictionary of string and bus objects

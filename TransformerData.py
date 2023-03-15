@@ -1,18 +1,17 @@
 import ssl
 import cmath
+from BaseValues import BaseValues
 import math
 
 
 class TransformerData:
     txCount = 0
 
-    def __init__(self, sRated, vPrimary, vSecondary, zPctTransformer, xrRatio):
+    def __init__(self, sRated, vPrimary, vSecondary, zPctTransformer, xrRatio, bases: BaseValues):
         self.sRated = sRated
-        self.sBase = sRated
+        self.sBase = bases.pbase
         self.vPrimary = vPrimary
-        self.vBasePrim = vPrimary
         self.vSecondary = vSecondary
-        self.vBaseSecondary = vSecondary
         self.zPct = zPctTransformer
         self.xrRatio = xrRatio
         self.zPUphasor = [self.makeZpuPhasor(self.zPct, self.xrRatio, self.vPrimary, self.vSecondary,
@@ -22,6 +21,7 @@ class TransformerData:
         self.txRpu = self.zPuRect.real()
         self.txXpu = self.zPuRect.imag()
         self.txYpu = 1 / (self.txRpu + 1j * self.txXpu)
+
 
     def makeZpuPhasor(self, zPCT, xrRatio, vprim, srated):  # is it vlow or v primary????
         zTransformerPU = (zPCT / 100) * cmath.exp(cmath.atan(xrRatio) * 1j) * (

@@ -1,4 +1,5 @@
 import math
+from Conductor import Conductor
 class Bundle:
     def __init__(self, name, bundleSize, bundleDistance, conductor: Conductor):
         self.size = bundleSize

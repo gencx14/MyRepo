@@ -1,3 +1,4 @@
+
 class Generator:
     Generator = 0
     def __init__(self, name, voltage, bus1, bus2 = None):

@@ -1,6 +1,8 @@
 import cmath
 class BaseValues:
-    def __init__(self, Pbase, Vbase):
-        self.Pbase = Pbase
-        self.Vbase = Vbase
-        self.Zbase = Vbase**2/Pbase
+    def __init__(self, pbase, vbase):
+        self.pbase = Pbase
+        self.vbase = Vbase
+        self.zbase = self.vbase**2/self.pbase
+        self.ybase = 1 / self.vbase
+

@@ -1,25 +1,24 @@
-import ssl
 import cmath
 from BaseValues import BaseValues
-import math
 
 
 class TransformerData:
     txCount = 0
 
-    def __init__(self, sRated, vPrimary, vSecondary, zPctTransformer, xrRatio, bases: BaseValues):
-        self.sRated = sRated
-        self.sBase = bases.pbase
-        self.vPrimary = vPrimary
-        self.vSecondary = vSecondary
-        self.zPct = zPctTransformer
-        self.xrRatio = xrRatio
-        self.zPUphasor = [self.makeZpuPhasor(self.zPct, self.xrRatio, self.vPrimary, self.vSecondary,
-                                             sRated)]  # zPUphasor[0] is magnitude while [1] is phase
+    def __init__(self, name: str, s_rated, v_primary, v_secondary, zpct_transformer, xr_ratio, bases: BaseValues):
+        self.name = name
+        self.srated = s_rated
+        self.sbase = bases.pbase
+        self.vprimary = v_primary
+        self.vsecondary = v_secondary
+        self.zpct = zpct_transformer
+        self.xr_ratio = xr_ratio
+        self.zPUphasor = [self.makeZpuPhasor(self.zpct, self.xr_ratio, self.vprimary,
+                                             self.srated)]  # zPUphasor[0] is magnitude while [1] is phase
         self.zPuRect = cmath.rect(
-            *self.zPUphasor)  # has a list be passed in as multiple argurments to a function... so this is mag and phase
-        self.txRpu = self.zPuRect.real()
-        self.txXpu = self.zPuRect.imag()
+            *self.zPUphasor)  # has a list be passed in as multiple arguments to a function... so this is mag and phase
+        self.txRpu = self.zPuRect.real
+        self.txXpu = self.zPuRect.imag
         self.txYpu = 1 / (self.txRpu + 1j * self.txXpu)
 
 

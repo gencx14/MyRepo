@@ -1,8 +1,12 @@
-from Circuit import Circuit
+from System import System
+from YbusFormation import YbusFormation
 class Solution:
-    def __init__(self, circuit: Circuit):
-        self.circuit = circuit
+    def __init__(self, system: System):
+        self.system = system
+        self.ybus = YbusFormation(self.system)
+        self.ybus = self.ybus.ymatrix
         self.bus_voltages = []
+        print(self.ybus)
     def do_power_flow(self):
         """
         current of system

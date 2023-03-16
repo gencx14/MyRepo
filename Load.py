@@ -14,28 +14,28 @@ class Load:
 
 
     # set functions
-    def setName(self, name):
+    def set_name(self, name):
         self.name = name
-    def setbus1(self, busObject):
+    def set_bus1(self, busObject):
         self.bus1 = busObject
-    def setPower(self, power):
+    def set_power(self, power):
         self.p_rated = power
-    def setvoltage(self, voltageRating):
+    def set_voltage(self, voltageRating):
         self.v_rated = voltageRating
     # get functions
-    def getName(self):
+    def get_name(self):
         return self.name
-    def getbus1(self):
+    def get_bus1(self):
         return self.bus1
 
-    def getRatedPower(self):
+    def get_ratedpower(self):
         return self.p_rated
-    def getRatedVoltage(self):
+    def get_ratedvoltage(self):
         return self.v_rated
-    def getloadResistance(self):
+    def get_loadresistance(self):
         return self.loadResistance
     #calculate the admittance
-    def calcAdmittance(self):
+    def calc_admittance(self):
         #caluclate admittance locally
         g = 1/self.loadResistance
         #create a pandas dataframe

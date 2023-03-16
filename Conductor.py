@@ -1,10 +1,10 @@
 class Conductor:
-#once this is ready update TransmissionLineData.py so that conductor information only has to be put in once
-    def __int__(self, name: str, outerDiameter, gmr, rAC, ampacity):
+    def __int__(self, name: str, outerDiameter, gmr, rAC, ampacity=None):
         self.name = name
         self.diameter = outerDiameter
         self.gmr = gmr
-        self.rAC = rAC
+        self.rAC = rAC  # this will get passed to bundle
+        self.ampacity = ampacity
 
     def getdiameter(self):
         return self.diameter
@@ -14,7 +14,7 @@ class Conductor:
 
     def getrAC(self):
         return self.rAC
-    #pass this to bundle
+
 
 
 

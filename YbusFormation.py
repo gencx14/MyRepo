@@ -1,27 +1,26 @@
 from System import System
 import numpy as np
+
+
 class YbusFormation:
 
     def __int__(self, system: System):
         self.system = system
+        self.ymatrix = None
         self.numBusses = len(self.system.buses)
-        self.yBusMatrix = np.zeros(self.numBusses, self.numBusses, dtype=complex)      # creates an n by n matrix of zeros where
+        self.ymatrix = np.zeros(len(self.system.buses), len(self.system.buses),
+                                dtype=complex)  # creates an n by n matrix of 0s
+        self.bus_order = list()
+        self.fillYbus()
 
     def fillYbus(self):
-        self.ymatrix = np.zeros((len(self.system.buses), len(self.system.buses)))
-        self.bus_order = list()
-
-        for element_name, element in self.circuit.y_elements.items():
-            for row  in element.buses:
+        for element_name, element in self.system.y_elements.items():
+            for row in element.buses:
                 for col in element.buses:
-                    index_row = self.circuit.buses[row].index
-                    index_col = self.circuit.buses[col].index
+                    index_row = self.system.buses[row].index
+                    index_col = self.system.buses[col].index
 
                     self.ymatrix[index_row, index_col] = self.ymatrix[index_row, index_col] + element.y.loc[row, col]
-
-
-
-
 
 
 """"  This was my first attempt but the above method is much more succinct and brief
@@ -50,7 +49,6 @@ class YbusFormation:
 
 """
 
-
-#form a [Bus.busCount]i [Bus.busCount]k matrix
-#do a loop through k inside a loop through i. In the inner loop have an if statement that if i == k do the Ykk
+# form a [Bus.busCount]i [Bus.busCount]k matrix
+# do a loop through k inside a loop through i. In the inner loop have an if statement that if i == k do the Ykk
 #  calculation. If i != k then do the Ykn calculation and store the value in the [i][k] spot in the matrix.

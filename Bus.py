@@ -8,14 +8,14 @@ class Bus:
         self.voltage = None
 
 
-    def getBusCount(self):
+    def get_buscount(self):
         return Bus.busCount
-    def getName(self):
+    def get_name(self):
         return self.name
-    def setName(self, name):
+    def set_name(self, name):
         self.name = name
     #sets the bus voltage
-    def setBusVoltage(self, v):
+    def set_busvoltage(self, v):
         self.voltae = v
 
 

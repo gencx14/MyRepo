@@ -1,4 +1,3 @@
-import Constants
 from Bus import Bus
 from Resistor import Resistor
 from Bundle import Bundle
@@ -18,6 +17,7 @@ from typing import List
 class System:
     componentCount = 0
     SystemCount = 0
+    dataCount = 0
 
     def __init__(self, name: str, pbase, vbase):
         self.name: str = name
@@ -65,34 +65,30 @@ class System:
             self.buses[bus1].setBusVoltage(voltage)
             System.componentCount += 1
 
-
     def add_conductor(self, name, outerDiameter, gmr, rAC, ampacity):
         if name not in self.conductors.keys():
-            self.conductors[name] = Conductor(name, outerDiameter,gmr, rAC, ampacity)
+            self.conductors[name] = Conductor(name, outerDiameter, gmr, rAC, ampacity)
 
     def add_geometry(self, name: str, ax, ay, bx, by, cx, cy):
         if name not in self.geometries.keys():
             self.geometries[name] = Geometry(name, ax, ay, bx, by, cx, cy)
-
 
     def add_bundle(self, name, bundleSize, bundleDistance, conductor: Conductor):
         if name not in self.bundles.keys():
             self.bundles[name] = Bundle(name, bundleSize, bundleDistance, conductor)
 
     def add_transfromer(self, name: str, bus1, bus2, txData: TransformerData):
-        if name not in self.transormers.keys():
-            self.transformers[name] = Transformer(name, bus1, bus2, txData, self.bases)
-            self.y_elements[name] = Transformer(name, bus1, bus2, txData, self.bases)
+        if name not in self.transformers.keys():
+            self.transformers[name] = Transformer(name, bus1, bus2, txData)
+            self.y_elements[name] = Transformer(name, bus1, bus2, txData)
             self.add_bus(bus1)
             self.add_bus(bus2)
             System.componentCount += 1
 
     def add_transformerData(self, name, sRated, vPrimary, vSecondary, zPctTransformer, xrRatio):
         if name not in self.transformerdataItems.keys():
-            self.transformerdataItems[name] = TransformerData(self, name, sRated, vPrimary, vSecondary, zPctTransformer,
+            self.transformerdataItems[name] = TransformerData(name, sRated, vPrimary, vSecondary, zPctTransformer,
                                                               xrRatio, self.bases)
-            System.componentCount += 1
-
 
     def add_transmissionLine(self, name: str, bus1, bus2, lineData: TransmissionLineData, length):
         if name not in self.transmissionlines.keys():
@@ -115,6 +111,6 @@ class System:
 
     def add_loadElement(self, name, bus_name, power, voltage):
         if name not in self.loadItems.keys():
-            self.loadItems[name] = Load(name, bus_name, power, voltage, self.bases)
+            self.loadItems[name] = Load(name, bus_name, power, voltage)
             self.add_bus(bus_name)
             System.componentCount += 1

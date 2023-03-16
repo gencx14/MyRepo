@@ -65,9 +65,10 @@ class System:
             self.buses[bus1].setBusVoltage(voltage)
             System.componentCount += 1
 
-    def add_conductor(self, name, outerDiameter, gmr, rAC, ampacity):
+    def add_conductor(self, name, outerDiameter, gmr, rAC, ampacity=None):
         if name not in self.conductors.keys():
             self.conductors[name] = Conductor(name, outerDiameter, gmr, rAC, ampacity)
+
 
     def add_geometry(self, name: str, ax, ay, bx, by, cx, cy):
         if name not in self.geometries.keys():
@@ -77,7 +78,7 @@ class System:
         if name not in self.bundles.keys():
             self.bundles[name] = Bundle(name, bundleSize, bundleDistance, conductor)
 
-    def add_transfromer(self, name: str, bus1, bus2, txData: TransformerData):
+    def add_transformer(self, name: str, bus1, bus2, txData: TransformerData):
         if name not in self.transformers.keys():
             self.transformers[name] = Transformer(name, bus1, bus2, txData)
             self.y_elements[name] = Transformer(name, bus1, bus2, txData)
@@ -98,7 +99,7 @@ class System:
             self.add_bus(bus2)
             System.componentCount += 1
 
-    def add_transmissionLineData(self, name, bundle: Bundle, geometry: Geometry, conductor: Conductor):
+    def add_transmissionLineData(self, name: str, bundle: Bundle, geometry: Geometry, conductor: Conductor):
         if name not in self.transmissionlineDataItems.keys():
             self.transmissionlineDataItems[name] = TransmissionLineData(name, bundle, geometry, conductor)
 

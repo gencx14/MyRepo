@@ -11,6 +11,7 @@ class YbusFormation:
         self.ymatrix = np.zeros((len(self.system.buses), len(self.system.buses)), dtype=complex) # creates an n by n matrix of 0s
         self.bus_order = list()
         self.fillYbus()
+        print("Print")
 
     def fillYbus(self):
         for element_name, element in self.system.y_elements.items():

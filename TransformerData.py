@@ -13,19 +13,19 @@ class TransformerData:
         self.vsecondary = v_secondary
         self.zpct = zpct_transformer
         self.xr_ratio = xr_ratio
-        self.zPUphasor = [self.makeZpuPhasor(self.zpct, self.xr_ratio, self.vprimary,
-                                             self.srated)]  # zPUphasor[0] is magnitude while [1] is phase
-        self.zPuRect = cmath.rect(
-            *self.zPUphasor)  # has a list be passed in as multiple arguments to a function... so this is mag and phase
+        self.zPUphasor = None
+        self.zPuRect = None
+        self.makeZpu(self.zpct, self.xr_ratio, self.vprimary, self.srated)
         self.txRpu = self.zPuRect.real
         self.txXpu = self.zPuRect.imag
         self.txYpu = 1 / (self.txRpu + 1j * self.txXpu)
 
 
-    def makeZpuPhasor(self, zPCT, xrRatio, vprim, srated):  # is it vlow or v primary????
-        zTransformerPU = (zPCT / 100) * cmath.exp(cmath.atan(xrRatio) * 1j) * (
+    def makeZpu(self, zPCT, xrRatio, vprim, srated):  # is it vlow or v primary????
+        self.zPuRect = (zPCT / 100) * cmath.exp(cmath.atan(xrRatio) * 1j) * (
                     (vprim ** 2 / srated) / (vprim ** 2 / 100))
-        return cmath.polar(zTransformerPU)
+        self.zPUphasor = cmath.polar(self.zPuRect)
+
 
     def gettxYpu(self):
         return self.txYpu

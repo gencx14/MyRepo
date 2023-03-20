@@ -10,6 +10,7 @@ class Transformer:
         self.name = name
         self.bus1 = bus1
         self.bus2 = bus2
+        self.buses = [self.bus1, self.bus2]
         self.data = tx_data
         self.calc_y()
 

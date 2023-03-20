@@ -4,12 +4,11 @@ import numpy as np
 
 class YbusFormation:
 
-    def __int__(self, system: System):
+    def __init__(self, system: System):
         self.system = system
         self.ymatrix = None
         self.numBusses = len(self.system.buses)
-        self.ymatrix = np.zeros(len(self.system.buses), len(self.system.buses),
-                                dtype=complex)  # creates an n by n matrix of 0s
+        self.ymatrix = np.zeros((len(self.system.buses), len(self.system.buses)), dtype=complex) # creates an n by n matrix of 0s
         self.bus_order = list()
         self.fillYbus()
 

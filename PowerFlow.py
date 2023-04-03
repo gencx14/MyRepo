@@ -136,28 +136,28 @@ class PowerFlow:
 
     def calc_J2(self, k, n):
         J2_df = pd.DataFrame()
-        J2_df.loc[self.ybusarr[i].index, self.ybusarr[i].index] =
-        J2_df.loc[self.ybusarr[i].index, self.ybusarr[k].index] = self.x[k + self.plength] * abs(self.ybus[k][n]) * np.cos(np.rad2deg(self.x[k]) - np.rad2deg(self.x[n]) - np.rad2deg(cmath.phase(self.ybus[k][n])))
-        J2_df.loc[self.ybusarr[k].index, self.ybusarr[i].index] = self.x[n + self.plength] * abs(self.ybus[n][k]) * np.cos(np.rad2deg(self.x[n]) - np.rad2deg(self.x[k]) - np.rad2deg(cmath.phase(self.ybus[n][k])))
-        J2_df.loc[self.ybusarr[k], self.ybusarr[k]] =
+        J2_df.loc[self.ybusarr[k].index, self.ybusarr[k].index] =
+        J2_df.loc[self.ybusarr[k].index, self.ybusarr[n].index] = self.x[k + self.plength] * abs(self.ybus[k][n]) * np.cos(np.rad2deg(self.x[k]) - np.rad2deg(self.x[n]) - np.rad2deg(cmath.phase(self.ybus[k][n])))
+        J2_df.loc[self.ybusarr[n].index, self.ybusarr[k].index] = self.x[n + self.plength] * abs(self.ybus[n][k]) * np.cos(np.rad2deg(self.x[n]) - np.rad2deg(self.x[k]) - np.rad2deg(cmath.phase(self.ybus[n][k])))
+        J2_df.loc[self.ybusarr[n], self.ybusarr[n]] =
         ##check to see if this saves y as a variable
         self.J2 = J2_df
 
     def calc_J3(self, k, n):
         J3_df = pd.DataFrame()
-        J3_df.loc[self.ybusarr[i].index, self.ybusarr[i].index] =
-        J3_df.loc[self.ybusarr[i].index, self.ybusarr[k].index] = -1 * self.x[k + self.plength] * abs(self.ybus[k][n]) * self.x[n + self.plength] * np.cos(np.rad2deg(self.x[k]) - np.rad2deg(self.x[n]) - np.rad2deg(cmath.phase(self.ybus[k][n])))
-        J3_df.loc[self.ybusarr[k].index, self.ybusarr[i].index] = -1 * self.x[n + self.plength] * abs(self.ybus[n][k]) * self.x[k + self.plength] * np.sin(np.rad2deg(self.x[n]) - np.rad2deg(self.x[k]) - np.rad2deg(cmath.phase(self.ybus[n][k])))
-        J3_df.loc[self.ybusarr[k], self.ybusarr[k]] =
+        J3_df.loc[self.ybusarr[k].index, self.ybusarr[n].index] =
+        J3_df.loc[self.ybusarr[k].index, self.ybusarr[k].index] = -1 * self.x[k + self.plength] * abs(self.ybus[k][n]) * self.x[n + self.plength] * np.cos(np.rad2deg(self.x[k]) - np.rad2deg(self.x[n]) - np.rad2deg(cmath.phase(self.ybus[k][n])))
+        J3_df.loc[self.ybusarr[n].index, self.ybusarr[k].index] = -1 * self.x[n + self.plength] * abs(self.ybus[n][k]) * self.x[k + self.plength] * np.sin(np.rad2deg(self.x[n]) - np.rad2deg(self.x[k]) - np.rad2deg(cmath.phase(self.ybus[n][k])))
+        J3_df.loc[self.ybusarr[n], self.ybusarr[n]] =
         ##check to see if this saves y as a variable
         self.J3 = J3_df
 
     def calc_J4(self, k, n):                    #IF THIS ISNT WORKING CHECK YOUR USE OF rad2deg function... should prob only be on outside!
         J4_df = pd.DataFrame()
-        J4_df.loc[self.ybusarr[i].index, self.ybusarr[i].index] =
-        J4_df.loc[self.ybusarr[i].index, self.ybusarr[k].index] = self.x[k + self.plength] * abs(self.ybus[k][n]) * np.sin(np.rad2deg(self.x[k]) - np.rad2deg(self.x[n]) - np.rad2deg(cmath.phase(self.ybus[k][n])))
-        J4_df.loc[self.ybusarr[k].index, self.ybusarr[i].index] = self.x[n + self.plength] * abs(self.ybus[n][k]) * np.sin(np.rad2deg(self.x[n]) - np.rad2deg(self.x[k]) - np.rad2deg(cmath.phase(self.ybus[n][k])))
-        J4_df.loc[self.ybusarr[k], self.ybusarr[k]] =
+        J4_df.loc[self.ybusarr[k].index, self.ybusarr[k].index] =
+        J4_df.loc[self.ybusarr[k].index, self.ybusarr[n].index] = self.x[k + self.plength] * abs(self.ybus[k][n]) * np.sin(np.rad2deg(self.x[k]) - np.rad2deg(self.x[n]) - np.rad2deg(cmath.phase(self.ybus[k][n])))
+        J4_df.loc[self.ybusarr[n].index, self.ybusarr[k].index] = self.x[n + self.plength] * abs(self.ybus[n][k]) * np.sin(np.rad2deg(self.x[n]) - np.rad2deg(self.x[k]) - np.rad2deg(cmath.phase(self.ybus[n][k])))
+        J4_df.loc[self.ybusarr[n], self.ybusarr[n]] =
         ##check to see if this saves y as a variable
         self.J4 = J4_df
 

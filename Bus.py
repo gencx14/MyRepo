@@ -1,20 +1,20 @@
 class Bus:
     #Class Attribute
     busCount = 0
-    Bus.swingCount = 0
-    Bus.pq_count = 0
-    Bus.pv_count = 0
-    def __init__(self, name, vk = None, delta1 = None, pk = None, qk = None, type = None): #where should I set the bus voltage
+    slackCount = 0
+    load_count = 0
+    vc_count = 0
+    def __init__(self, name): #where should I set the bus voltage
         self.index = Bus.busCount
         self.name = name
         self.type = None
-        self.vk = vk
-        self.delta1 = delta1
-        self.pk = pk
-        self.qk = qk
+        self.vk = None
+        self.delta1 = None
+        self.pk = None
+        self.qk = None
         Bus.busCount += 1
         self.type = type
-        self.getBusTypeCount()
+        # self.getBusTypeCount()
 
     def getBusTypeCount(self):
         if self.type == "Slack":
@@ -23,6 +23,8 @@ class Bus:
             Bus.load_count += 1
         elif self.type == "VC":
             Bus.vc_count += 1
+        elif self.type == None:
+            return
         else:
             exit("Incorrect Bus Input Values for " + self.name)
 

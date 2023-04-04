@@ -16,6 +16,15 @@ system.add_transformerData("Tx1data", 125000000, 20000, 230000, 0.085, 10)
 system.add_transformerData("Tx2data", 200000000, 18000, 230000, 0.105, 12)
 system.add_transformer("Tx1", "bus1", "bus2", system.transformerdataItems["Tx1data"])
 system.add_transformer("Tx2", "bus6", "bus7", system.transformerdataItems["Tx2data"])
+system.set_bus("bus1", "Slack", 1.0, 0.0)
+system.set_bus("bus2", "Load", None, None, 0, 0)
+system.set_bus("bus3", "Load", None, None, -110, -50)
+system.set_bus("bus4", "Load", None, None, -100, -70)
+system.set_bus("bus5", "Load", None, None, -100, -65)
+system.set_bus("bus6", "Load", None, None, 0, 0)
+system.set_bus("bus7", "VC", 1.0, 0, 200, 0)
+
+
 
 ybusmatrix = Solution(system)
 

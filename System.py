@@ -21,6 +21,7 @@ class System:
 
     def __init__(self, name: str, pbase, vbase):
         self.name: str = name
+        self.ybus = None
         self.bases = BaseValues(pbase, vbase)  # check on this if it gets messed up.
         # makes a list of the bus order and ensures that they are entered as strings
         self.buses_order: List[str] = list()
@@ -115,3 +116,12 @@ class System:
             self.loadItems[name] = Load(name, bus_name, power, voltage)
             self.add_bus(bus_name)
             System.componentCount += 1
+
+    def set_bus(self, key, type, v1 = None, d1 = None, p = None, q = None):
+        self.buses[key].type = type
+        self.buses[key].vk = v1
+        self.buses[key].delta1 = d1
+        self.buses[key].pk = p
+        self.buses[key].qk = q
+        self.buses[key].getBusTypeCount()
+

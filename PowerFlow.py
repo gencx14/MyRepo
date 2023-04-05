@@ -19,19 +19,21 @@ class PowerFlow:
         self.ybusarr = None
         self.xbusarr = None
         self.step1_y_array()
+        self.step2_x_array_flatstart()
+        self.step3_find_fx()    # still need to check math but looks right so far
+        self.step4_find_delta_y()
         #  fill y for power equation from bus information
 
-    #finds the y
+    #finds the y... THIS WORKS AS EXPECTED
     def step1_y_array(self):
         # find y array which contains starting power values but make sure that you are using the bus objects
-        busarr = np.zeros(len(self.system.buses))
         # 1. create a vertical array of zeros for our P values
-        Ptemp = np.zeros(len(self.system.buses), 1)
+        Ptemp = np.zeros((len(self.system.buses) - Bus.slackCount, 1))
         # 2.  create a vertical array of zeros for our P values
-        Qtemp = np.zeros(len(self.system.buses), 1)
+        Qtemp = np.zeros((len(self.system.buses) - Bus.slackCount, 1))
         # 3. create an array of the buses objects except the ones that are voltage controlled and create the P&Q arrays
         i = 0
-        busarr = np.zeros(len(self.system.buses))
+        busarr = np.zeros(len(self.system.buses), dtype=object)
         for bus in self.system.buses:
             if self.system.buses[bus].type == "Slack":
                 continue
@@ -42,31 +44,31 @@ class PowerFlow:
             i += 1
         #trim excess storage from the matrix
         self.ybusarr = np.trim_zeros(busarr)
-        Ptemp = np.trim_zeros(Ptemp)
         self.plength = len(Ptemp)
         self.qlength = len(Qtemp)
 
 
         # 3. concatenate the arrays
-        ytemp = np.zeros(len(self.system.buses) * 2)
+        ytemp = np.zeros(((len(self.system.buses) - Bus.slackCount)* 2, 1))
         ytemp = np.concatenate((Ptemp, Qtemp))
-        self.y = np.zeros(len(ytemp))
-        self.y = np.trim_zeros(ytemp)
-'''
+
+        self.y = ytemp
+
     #finds the x
     def step2_x_array_flatstart(self):
         #  find x array which contains flat start voltage and
         # 1. create a vertical array of zeros for our delta values (voltage angles), flat start phase angle = 0 degrees
-        delta_temp = np.zeros(len(self.plength), 1)
+        delta_temp = np.zeros((self.plength, 1))
         # 2. create a vertical array of ones for our voltage magnitude values for our flat start (mag = 1.0 for all)
-        volt_temp = np.zeros(len(self.plength), 1)
-        busarr = np.zeros(len(self.system.buses))
+        volt_temp = np.zeros((self.plength, 1))
+        busarr = np.zeros(len(self.system.buses), dtype=object)
         i = 0
-        #find slack voltages (will almost always be 1.0 and 0 degrees)
+        #  find slack voltages (will almost always be 1.0 and 0 degrees)
         for bus in self.system.buses:
             if self.system.buses[bus].type == "Slack":
                 slackvoltage = self.system.buses[bus].vk
                 slackdelta = self.system.buses[bus].delta1
+                break
 
         # fill voltage and deltas array
         for bus in self.system.buses:
@@ -86,34 +88,36 @@ class PowerFlow:
 
         self.xbusarr = np.trim_zeros(busarr)
         # 3. concatenate the arrays
-        self.x = np.zeros(len(delta_temp) + len(volt_temp), 1)
+        self.x = np.zeros((len(delta_temp) + len(volt_temp), 1))
         self.x = np.concatenate((delta_temp, volt_temp))
 
     # finds the P(x) value
-    def find_fx(self):
-        p_x = np.zeros(self.plength, 1)
-        q_x = np.zeros(self.plength, 1)
+    def step3_find_fx(self):
+        self.p_x = np.zeros((self.plength, 1))
+        self.q_x = np.zeros((self.plength, 1))
         for k in range(self.plength):
             for n in range(self.plength):
-                self.p_x[k] += self.x[k + self.plength] * abs(self.ybus[k][n]) * self.x[n + self.plength] * np.cos(np.rad2deg(self.x[k]) - np.rad2deg(self.x[n]) - np.rad2deg(cmath.phase(self.ybus[k][n])))
-                self.q_x[k] += self.x[k + self.plength] * abs(self.ybus[k][n]) * self.x[n + self.plength] * np.sin(np.rad2deg(self.x[k]) - np.rad2deg(self.x[n]) - np.rad2deg(cmath.phase(self.ybus[k][n])))
+                # Compute active power flow
+                self.p_x[k] += self.x[k + self.plength] * abs(self.ybus[k][n]) * self.x[n + self.plength] * np.cos(np.deg2rad(self.x[k] - self.x[n] - cmath.phase(self.ybus[k][n])))
 
-        self.f_x = np.zeros(len(p_x) + len(q_x))
-        self.f_x = np.concatenate((p_x, q_x))
+                # Compute reactive power flow
+                self.q_x[k] += self.x[k + self.plength] * abs(self.ybus[k][n]) * self.x[n + self.plength] * np.sin(np.deg2rad(self.x[k] - self.x[n] - cmath.phase(self.ybus[k][n])))
+        self.f_x = np.zeros(len(self.p_x) + len(self.q_x))
+        self.f_x = np.concatenate((self.p_x, self.q_x))
 
     # returns the change in power
-    def find_delta_y(self):
-        delta_p = np.zeros(len(self.p_x))
-        delta_y = np.zeros(len(self.f_x))
-        delta_q = np.zeros(len(self.q_x))
+    def step4_find_delta_y(self):
+        delta_p = np.zeros((len(self.p_x), 1))
+        delta_y = np.zeros((len(self.f_x), 1))
+        delta_q = np.zeros((len(self.q_x), 1))
         for k in range(len(self.f_x)):
-            delta_y[k] = self.y - self.f_x
+            delta_y[k] = self.y[k] - self.f_x[k]
         for k in range(len(self.p_x)):
-            delta_p[k] = self.y - self.p_x
+            delta_p[k] = self.y[k] - self.p_x[k]
         for k in range(len(self.q_x)):
-            delta_q[k] = self.y - self.q_x
+            delta_q[k] = self.y[k + self.plength] - self.q_x[k]
 
-
+'''
     # find the jacobian
     def find_jacob(self):
             for row in element.buses:
@@ -184,8 +188,7 @@ class PowerFlow:
 
 
 
-        '''# vector of every P, Q
+        # vector of every P, Q
 
         #find pk = p - px
-
-    '''
+'''

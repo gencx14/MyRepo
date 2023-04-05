@@ -1,6 +1,6 @@
 from System import System
 from YbusFormation import YbusFormation
-from Powerflow import PowerFlow
+from PowerFlow import PowerFlow
 class Solution:
     def __init__(self, system: System):
         self.system = system
@@ -8,7 +8,7 @@ class Solution:
         self.ybus = self.ybus.ymatrix
         self.system.ybus = self.ybus
         self.bus_voltages = []
-        self.pf = PowerFlow(self.system)
+        self.pf = PowerFlow(self.ybus, self.system)
 
     def do_power_flow(self):
         """

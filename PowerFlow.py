@@ -2,10 +2,12 @@ import numpy as np
 
 from System import System
 import cmath
+
+
 class PowerFlow:
     def __init__(self, ybus, system: System):
         self.N = len(system.buses)
-        self.tolerance = 0.00001
+        self.tolerance = 0.0001
         self.system = system
         self.ybus = ybus
         self.plength = None
@@ -30,6 +32,7 @@ class PowerFlow:
         self.busarr = None
         self.ybusarr = None
         self.xbusarr = None
+        self.printme = 0
         self.step1_y_array()
         self.step2_x_array_flatstart()
         self.Newton_Raphson()
@@ -41,10 +44,10 @@ class PowerFlow:
         # find y array which contains starting power values but make sure that you are using the bus objects
         # 1. create a vertical array of zeros for our P values
         # Ptemp = np.zeros((len(self.system.buses) - Bus.slackCount, 1))   ***REMOVED OFF REC FROM PAOLO
-        Ptemp = np.zeros((self.N, 1))
+        Ptemp = np.zeros((self.N, 1), dtype=float)
         # 2.  create a vertical array of zeros for our P values
         # Qtemp = np.zeros((len(self.system.buses) - Bus.slackCount, 1))    *** Removed off rec from Paolo
-        Qtemp = np.zeros((self.N, 1))
+        Qtemp = np.zeros((self.N, 1), dtype=float)
         # 3. create an array of the buses objects except the ones that are voltage controlled and create the P&Q arrays
         i = 0
         self.busarr = np.zeros(self.N, dtype=object)
@@ -63,7 +66,7 @@ class PowerFlow:
 
 
         # 3. concatenate the arrays
-        ytemp = np.zeros((self.plength + self.qlength, 1))
+        ytemp = np.zeros((self.plength + self.qlength, 1), dtype=float)
         ytemp = np.concatenate((Ptemp, Qtemp))
 
         self.y = ytemp
@@ -107,88 +110,88 @@ class PowerFlow:
 
         self.xbusarr = np.trim_zeros(busarr)
         # 3. concatenate the arrays
-        self.x = np.zeros((len(delta_temp) + len(volt_temp), 1))
+        self.x = np.zeros((len(delta_temp) + len(volt_temp), 1), dtype=float)
         self.x = np.concatenate((delta_temp, volt_temp))
 
-    # finds the P(x) value ----> POWER CALCULATION
     def step3_find_fx(self):
-        #self.N = len(self.system.buses)
-        self.p_x = np.zeros((self.N, 1))
-        self.q_x = np.zeros((self.N, 1))
+        # self.N = len(self.system.buses)
+        self.p_x = np.zeros(self.N, dtype=float)
+        self.q_x = np.zeros(self.N, dtype=float)
         for k in range(self.N):
             for n in range(self.N):
                 # Compute active power flow
-                self.p_x[k] += self.x[k + self.plength] * abs(self.ybus[k][n]) * self.x[n + self.plength] * np.cos(np.deg2rad(self.x[k] - self.x[n] - cmath.phase(self.ybus[k][n])))
+                self.p_x[k] += self.x[k + self.plength] * abs(self.ybus[k][n]) * self.x[n + self.plength] * np.cos(
+                    self.x[k] - self.x[n] - np.angle(self.ybus[k][n]))
 
                 # Compute reactive power flow
-                self.q_x[k] += self.x[k + self.plength] * abs(self.ybus[k][n]) * self.x[n + self.plength] * np.sin(np.deg2rad(self.x[k] - self.x[n] - cmath.phase(self.ybus[k][n])))
-        self.f_x = np.zeros(len(self.p_x) + len(self.q_x))
+                self.q_x[k] += self.x[k + self.plength] * abs(self.ybus[k][n]) * self.x[n + self.plength] * np.sin(
+                    self.x[k] - self.x[n] - np.angle(self.ybus[k][n]))
         self.f_x = np.concatenate((self.p_x, self.q_x))
 
     # returns the change in power
     def step4_find_delta_y(self):
-        self.delta_p = np.zeros((len(self.p_x), 1))
-        self.delta_y = np.zeros((len(self.f_x), 1))
-        self.delta_q = np.zeros((len(self.q_x), 1))
+        self.delta_p = np.zeros((len(self.p_x), 1), dtype=float)
+        self.delta_y = np.zeros((len(self.f_x), 1), dtype=float)
+        self.delta_q = np.zeros((len(self.q_x), 1), dtype=float)
         for k in range(len(self.f_x)):
             self.delta_y[k] = self.y[k] - self.f_x[k]
         for k in range(len(self.p_x)):
             self.delta_p[k] = self.y[k] - self.p_x[k]
         for k in range(len(self.q_x)):
             self.delta_q[k] = self.y[k + self.plength] - self.q_x[k]
-        self.y = self.y + self.delta_y
+
 
     def calc_J1(self):
-        self.J1 = np.zeros((self.plength, self.plength), dtype=complex)
+        self.J1 = np.zeros((self.plength, self.plength), dtype=float)
         for k in range(self.plength):
             for n in range(self.plength):
                 if k != n:
-                    self.J1[k][n] = self.x[k+self.plength] * abs(self.ybus[k][n]) * self.x[n + self.plength] * np.sin(np.deg2rad(self.x[k]) * np.deg2rad(self.x[n])* cmath.phase(self.ybus[k][n]))
+                    self.J1[k][n] = self.x[k+self.plength] * abs(self.ybus[k][n]) * self.x[n + self.plength] * np.sin((self.x[k]) - (self.x[n]) - np.angle(self.ybus[k][n]))
                 else:
                     temp = 0
                     for i in range(self.plength):
                         if i != n:
-                            temp += abs(self.ybus[k][i]) * self.x[i+self.plength] * np.sin(np.deg2rad(self.x[k]) - np.deg2rad(self.x[i]) - cmath.phase(self.ybus[k][i]))
+                            temp += abs(self.ybus[k][i]) * self.x[i+self.plength] * np.sin((self.x[k]) - (self.x[i]) - np.angle(self.ybus[k][i]))
                     self.J1[k][n] = -1 * self.x[k+self.plength] * temp
 
     def calc_J2(self):
-        self.J2 = np.zeros((self.plength, self.plength))
+        self.J2 = np.zeros((self.plength, self.plength), dtype=float)
         for k in range(self.plength):
             for n in range(self.plength):
                 if k != n:
-                    self.J2[k][n] = self.x[k+self.plength] * abs(self.ybus[k][n]) * self.x[n+self.plength] * np.cos(np.deg2rad(self.x[k]) * np.deg2rad(self.x[n]) * cmath.phase(self.ybus[k][n]))
+                    self.J2[k][n] = self.x[k+self.plength] * abs(self.ybus[k][n]) * self.x[n+self.plength] * np.cos((self.x[k]) - (self.x[n]) * np.angle(self.ybus[k][n]))
                 else:
                     temp = 0
                     for i in range(self.plength):
-                        temp += self.x[i + self.plength] * abs(self.ybus[k][i]) * np.cos(np.deg2rad(self.x[k]) - np.deg2rad(self.x[i]) - cmath.phase(self.ybus[k][i]))
-                    self.J2[k][n] = self.x[k + self.plength] * abs(self.ybus[k][n]) * np.cos(cmath.phase(self.ybus[k][n])) + temp
+                        temp += self.x[i + self.plength] * abs(self.ybus[k][i]) * np.cos(np.deg2rad(self.x[k]) - (self.x[i]) - np.angle(self.ybus[k][i]))
+                    self.J2[k][n] = self.x[k + self.plength] * abs(self.ybus[k][n]) * np.cos(np.angle(self.ybus[k][n])) + temp
 
     def calc_J3(self):
-        self.J3 = np.zeros((self.plength, self.plength))
+        self.J3 = np.zeros((self.plength, self.plength), dtype=float)
         for k in range(self.plength):
             for n in range(self.plength):
                 if k != n:
                     self.J3[k][n] = -1 * self.x[k + self.plength] * abs(self.ybus[k][n]) * self.x[n + self.plength] * np.cos(
-                        np.deg2rad(self.x[k]) * np.deg2rad(self.x[n]) * cmath.phase(self.ybus[k][n]))
+                        (self.x[k]) - (self.x[n]) - np.angle(self.ybus[k][n]))
                 else:
                     temp = 0
                     for i in range(self.plength):
                         if i != n:
                             temp += abs(self.ybus[k][i]) * self.x[i + self.plength] * np.cos(
-                                np.deg2rad(self.x[k]) - np.deg2rad(self.x[i]) - cmath.phase(self.ybus[k][i]))
+                                (self.x[k]) - (self.x[i]) - np.angle(self.ybus[k][i]))
                     self.J3[k][n] = self.x[k + self.plength] * temp
 
     def calc_J4(self):
-        self.J4 = np.zeros((self.plength, self.plength))
+        self.J4 = np.zeros((self.plength, self.plength), dtype=float)
         for k in range(self.plength):
             for n in range(self.plength):
                 if k != n:
-                    self.J4[k][n] = self.x[k+self.plength] * abs(self.ybus[k][n]) * self.x[n+self.plength] * np.sin(np.deg2rad(self.x[k]) * np.deg2rad(self.x[n]) * cmath.phase(self.ybus[k][n]))
+                    self.J4[k][n] = self.x[k+self.plength] * abs(self.ybus[k][n]) * self.x[n+self.plength] * np.sin((self.x[k]) - (self.x[n]) - np.angle(self.ybus[k][n]))
                 else:
                     temp = 0
                     for i in range(self.plength):
-                        temp += self.x[i + self.plength] * abs(self.ybus[k][i]) * np.sin(np.deg2rad(self.x[k]) - np.deg2rad(self.x[i]) - cmath.phase(self.ybus[k][i]))
-                    self.J4[k][n] = (-1 * self.x[k + self.plength] * abs(self.ybus[k][n])) * np.sin(cmath.phase(self.ybus[k][n])) + temp
+                        temp += self.x[i + self.plength] * abs(self.ybus[k][i]) * np.sin((self.x[k]) - (self.x[i]) - np.angle(self.ybus[k][i]))
+                    self.J4[k][n] = (-1 * self.x[k + self.plength] * abs(self.ybus[k][n])) * np.sin(np.angle(self.ybus[k][n])) + temp
 
     def form_jacobian(self):
         self.calc_J1()
@@ -200,8 +203,15 @@ class PowerFlow:
     def solveMismatch(self):
         count = 0
         self.N = int(self.Jacob.shape[0] / 2)
-        dx = np.zeros(2 * self.N, dtype=complex)
-        dy = np.zeros(2 * self.N, dtype=complex)
+        dx = np.zeros(2 * self.N, dtype=float)
+        dy = np.zeros(2 * self.N, dtype=float)
+
+        tiebusses = np.zeros(2 * len(self.system.buses), dtype=object)
+        n = 0
+        for bus in self.system.buses:
+            tiebusses[n] = self.system.buses[bus]
+            tiebusses[n+len(self.system.buses)] = self.system.buses[bus]
+            n+=1
 
         for n in range(self.N - 1, -1, -1): #iterate in reverse order
             if self.busarr[n].type == "Slack":
@@ -211,13 +221,17 @@ class PowerFlow:
                 self.Jacob = np.delete(arr=self.Jacob, obj=n, axis = 1)
                 self.delta_y = np.delete(arr=self.delta_y, obj = n + self.N)
                 self.delta_y = np.delete(arr = self.delta_y, obj = n)
+                tiebusses = np.delete(arr=tiebusses, obj=n+self.N)
+                tiebusses = np.delete(arr=tiebusses, obj=n)
             elif self.busarr[n].type == "VC":       # delete the Q values
                 count = count + 1
                 self.Jacob = np.delete(arr=self.Jacob, obj=n + self.N, axis = 0)
                 self.Jacob = np.delete(arr=self.Jacob, obj=n + self.N, axis = 1)
                 self.delta_y = np.delete(arr=self.delta_y, obj=n+self.N)
+                tiebusses = np.delete(arr=tiebusses, obj=n+self.N)
 
         self.delta_x = np.dot(np.linalg.inv(self.Jacob), self.delta_y)
+        #self.x = self.x + self.delta_x
 
         # I am not sure what this part does, and need to speak with Paolo about it
         m_p = 0
@@ -235,14 +249,18 @@ class PowerFlow:
                 m_q = m_q + 1
             elif self.busarr[n].type == "VC":
                 dx[n] = self.delta_x[m_p]
-                dy[n] = self.delta_y[m_p]
+                dy[n] = self.delta_y[m_p] # dont need
                 m_p = m_p + 1
-        self.delta_x = dx
-        self.delta_y = dy
+            # dx = np.trim_zeros(dx)
+            # dy = np.trim_zeros(dy)
+            dx = np.reshape(dx, (len(dx), 1))
+        self.x = self.x + dx
 
     def Newton_Raphson(self):
         # 1. Set up y array for original P and Q values of all busses... not not in loop
-        printme = 0
+
+        print(self.printme)
+        self.printme += 1
 
         # self.step1_y_array()
         # 2. Set up flat start, set self.x voltage values and delta values to 1.o and 0.0, respectivly.. not in loop
@@ -253,15 +271,14 @@ class PowerFlow:
         # 4. find delta y (y - fx) Power mismatch--> gives tolerance to know when we are complete
         self.step4_find_delta_y()
         # end the recursive function if tolerance is solved for
-        if np.amax(self.delta_y) < self.tolerance:
+        if np.amax(abs(self.delta_y)) < self.tolerance:
             self.x = self.x + self.delta_x
-            print(printme)
+            print(self.printme)
             return
         # form the jacobian
         self.form_jacobian()
         #solve the mismatch
         self.solveMismatch()
-        printme = printme + 1
         return self.Newton_Raphson()
 
 

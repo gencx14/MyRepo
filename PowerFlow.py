@@ -1,10 +1,10 @@
 import numpy as np
-from Bus import Bus
+
 from System import System
 import cmath
 class PowerFlow:
     def __init__(self, ybus, system: System):
-        self.N = len(self.system.buses)
+        self.N = len(system.buses)
         self.tolerance = 0.00001
         self.system = system
         self.ybus = ybus
@@ -14,6 +14,8 @@ class PowerFlow:
         self.delta_length = None
         self.y =None
         self.x = None
+        self.dx = None
+        self.dy = None
         self.f_x = None
         self.p_x = None
         self.q_x = None
@@ -30,13 +32,7 @@ class PowerFlow:
         self.xbusarr = None
         self.step1_y_array()
         self.step2_x_array_flatstart()
-        self.step3_find_fx()    # still need to check math but looks right so far
-        self.step4_find_delta_y()
-        self.calc_J1()
-        self.calc_J2()
-        self.calc_J3()
-        self.calc_J4()
-        self.form_jacobian()
+        self.Newton_Raphson()
         print()
         #  fill y for power equation from bus information
 
@@ -51,7 +47,7 @@ class PowerFlow:
         Qtemp = np.zeros((self.N, 1))
         # 3. create an array of the buses objects except the ones that are voltage controlled and create the P&Q arrays
         i = 0
-        busarr = np.zeros(self.N, dtype=object)
+        self.busarr = np.zeros(self.N, dtype=object)
         for bus in self.system.buses:
             # if self.system.buses[bus].type == "Slack":            *** REMOVED OFF REC FROM PAOLO
               #  continue
@@ -61,7 +57,7 @@ class PowerFlow:
             Qtemp[i] = self.system.buses[bus].qk
             i += 1
         #trim excess storage from the matrix
-        self.ybusarr = np.trim_zeros(busarr)
+        self.ybusarr = np.trim_zeros(self.busarr)
         self.plength = len(Ptemp)
         self.qlength = len(Qtemp)
 
@@ -116,11 +112,11 @@ class PowerFlow:
 
     # finds the P(x) value ----> POWER CALCULATION
     def step3_find_fx(self):
-        self.p_x = np.zeros((N, 1))
-        self.q_x = np.zeros((N, 1))
-        for k in range(N):
-            self.
-            for n in range(N):
+        #self.N = len(self.system.buses)
+        self.p_x = np.zeros((self.N, 1))
+        self.q_x = np.zeros((self.N, 1))
+        for k in range(self.N):
+            for n in range(self.N):
                 # Compute active power flow
                 self.p_x[k] += self.x[k + self.plength] * abs(self.ybus[k][n]) * self.x[n + self.plength] * np.cos(np.deg2rad(self.x[k] - self.x[n] - cmath.phase(self.ybus[k][n])))
 
@@ -140,6 +136,7 @@ class PowerFlow:
             self.delta_p[k] = self.y[k] - self.p_x[k]
         for k in range(len(self.q_x)):
             self.delta_q[k] = self.y[k + self.plength] - self.q_x[k]
+        self.y = self.y + self.delta_y
 
     def calc_J1(self):
         self.J1 = np.zeros((self.plength, self.plength), dtype=complex)
@@ -194,19 +191,23 @@ class PowerFlow:
                     self.J4[k][n] = (-1 * self.x[k + self.plength] * abs(self.ybus[k][n])) * np.sin(cmath.phase(self.ybus[k][n])) + temp
 
     def form_jacobian(self):
+        self.calc_J1()
+        self.calc_J2()
+        self.calc_J3()
+        self.calc_J4()
         self.Jacob = np.block([[self.J1, self.J2], [self.J3, self.J4]])
 
     def solveMismatch(self):
         count = 0
-        self.N = int(Jacob.shape[0] / 2)
-        dx = np.zeros(2 * self.N)
-        dy = np.zeros(2 * self.N)
+        self.N = int(self.Jacob.shape[0] / 2)
+        dx = np.zeros(2 * self.N, dtype=complex)
+        dy = np.zeros(2 * self.N, dtype=complex)
 
         for n in range(self.N - 1, -1, -1): #iterate in reverse order
             if self.busarr[n].type == "Slack":
-                self.Jacob = np.delete(arr=self.Jacob, obj=n + N, axis = 0)
-                self.Jacob = np.delete(arr=self.Jacob, obj=n + N, axis = 1)
-                self.Jacob = np.delte(arr=self.Jacob, obj=n, axis = 0)
+                self.Jacob = np.delete(arr=self.Jacob, obj=n + self.N, axis = 0)
+                self.Jacob = np.delete(arr=self.Jacob, obj=n + self.N, axis = 1)
+                self.Jacob = np.delete(arr=self.Jacob, obj=n, axis = 0)
                 self.Jacob = np.delete(arr=self.Jacob, obj=n, axis = 1)
                 self.delta_y = np.delete(arr=self.delta_y, obj = n + self.N)
                 self.delta_y = np.delete(arr = self.delta_y, obj = n)
@@ -231,49 +232,42 @@ class PowerFlow:
                 dy[n] = self.delta_y[m_p]
                 dy[n+self.N] = self.delta_y[self.N - 1 + m_q]
                 m_p = m_p + 1
-                m_q = m_q = 1
+                m_q = m_q + 1
             elif self.busarr[n].type == "VC":
                 dx[n] = self.delta_x[m_p]
-                dx[n] = self.delta_y[m_p]
+                dy[n] = self.delta_y[m_p]
                 m_p = m_p + 1
+        self.delta_x = dx
+        self.delta_y = dy
+
+    def Newton_Raphson(self):
+        # 1. Set up y array for original P and Q values of all busses... not not in loop
+        printme = 0
+
+        # self.step1_y_array()
+        # 2. Set up flat start, set self.x voltage values and delta values to 1.o and 0.0, respectivly.. not in loop
+        # self.step2_x_array_flatstart()
+        # 3. calculate power (find fx)
+        self.N = len(self.system.buses)
+        self.step3_find_fx()
+        # 4. find delta y (y - fx) Power mismatch--> gives tolerance to know when we are complete
+        self.step4_find_delta_y()
+        # end the recursive function if tolerance is solved for
+        if np.amax(self.delta_y) < self.tolerance:
+            self.x = self.x + self.delta_x
+            print(printme)
+            return
+        # form the jacobian
+        self.form_jacobian()
+        #solve the mismatch
+        self.solveMismatch()
+        printme = printme + 1
+        return self.Newton_Raphson()
 
 
 
 
-    def solve_Jdx_eq_dy(J, dy):
-        """
-        Solves the equation dx*J = dy using Gaussian elimination and back substitution.
 
-        Args:
-        J: numpy array representing the coefficient matrix.
-        dy: numpy array representing the right-hand side vector.
-
-        Returns:
-        dx: numpy array representing the solution vector.
-        """
-        Jinv = np.linalg.inv(self.Jacob)
-
-        # Step 1: Perform Gaussian elimination on J and dy
-        n = len(Jinv)
-        for i in range(n):
-            # Find pivot element and swap rows if necessary
-            max_index = i
-            for j in range(i + 1, n):
-                if abs(Jinv[j, i]) > abs(Jinv[max_index, i]):
-                    max_index = j
-            if max_index != i:
-                Jinv[[i, max_index]] = Jinv[[max_index, i]]
-                dy[[i, max_index]] = dy[[max_index, i]]
-            # Eliminate elements below the pivot
-            for j in range(i + 1, n):
-                factor = Jinv[j, i] / Jinv[i, i]
-                Jinv[j, :] -= factor * Jinv[i, :]
-                dy[j] -= factor * dy[i]
-        # Step 2: Perform back substitution to find dx
-        dx = np.zeros(n)
-        for i in range(n - 1, -1, -1):
-            dx[i] = (dy[i] - np.dot(J[i, i + 1:], dx[i + 1:])) / J[i, i]
-        return dx
 
 
 '''

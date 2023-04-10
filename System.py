@@ -117,11 +117,11 @@ class System:
             self.add_bus(bus_name)
             System.componentCount += 1
 
-    def set_bus(self, key, type, v1 = None, d1 = None, p = None, q = None):
+    def set_bus(self, key, type, v1 = 0, d1 = 0, p = 0, q = 0):
         self.buses[key].type = type
         self.buses[key].vk = v1
         self.buses[key].delta1 = d1
-        self.buses[key].pk = p
-        self.buses[key].qk = q
+        self.buses[key].pk = p * 1e6 / self.bases.pbase
+        self.buses[key].qk = q * 1e6 /self.bases.pbase
         self.buses[key].getBusTypeCount()
 

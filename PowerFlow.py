@@ -159,11 +159,11 @@ class PowerFlow:
         for k in range(self.plength):
             for n in range(self.plength):
                 if k != n:
-                    self.J2[k][n] = self.x[k+self.plength] * abs(self.ybus[k][n]) * self.x[n+self.plength] * np.cos((self.x[k]) - (self.x[n]) * np.angle(self.ybus[k][n]))
+                    self.J2[k][n] = self.x[k+self.plength] * abs(self.ybus[k][n]) * np.cos((self.x[k]) - (self.x[n]) - np.angle(self.ybus[k][n]))
                 else:
                     temp = 0
                     for i in range(self.plength):
-                        temp += self.x[i + self.plength] * abs(self.ybus[k][i]) * np.cos(np.deg2rad(self.x[k]) - (self.x[i]) - np.angle(self.ybus[k][i]))
+                        temp += self.x[i + self.plength] * abs(self.ybus[k][i]) * np.cos((self.x[k]) - (self.x[i]) - np.angle(self.ybus[k][i]))
                     self.J2[k][n] = self.x[k + self.plength] * abs(self.ybus[k][n]) * np.cos(np.angle(self.ybus[k][n])) + temp
 
     def calc_J3(self):
@@ -186,7 +186,7 @@ class PowerFlow:
         for k in range(self.plength):
             for n in range(self.plength):
                 if k != n:
-                    self.J4[k][n] = self.x[k+self.plength] * abs(self.ybus[k][n]) * self.x[n+self.plength] * np.sin((self.x[k]) - (self.x[n]) - np.angle(self.ybus[k][n]))
+                    self.J4[k][n] = self.x[k+self.plength] * abs(self.ybus[k][n]) * np.sin((self.x[k]) - (self.x[n]) - np.angle(self.ybus[k][n]))
                 else:
                     temp = 0
                     for i in range(self.plength):
@@ -230,6 +230,7 @@ class PowerFlow:
                 self.delta_y = np.delete(arr=self.delta_y, obj=n+self.N)
                 tiebusses = np.delete(arr=tiebusses, obj=n+self.N)
 
+
         self.delta_x = np.dot(np.linalg.inv(self.Jacob), self.delta_y)
         #self.x = self.x + self.delta_x
 
@@ -272,7 +273,7 @@ class PowerFlow:
         self.step4_find_delta_y()
         # end the recursive function if tolerance is solved for
         if np.amax(abs(self.delta_y)) < self.tolerance:
-            self.x = self.x + self.delta_x
+            # self.x = self.x + self.delta_x
             print(self.printme)
             return
         # form the jacobian

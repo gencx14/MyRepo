@@ -4,9 +4,8 @@ from PowerFlow import PowerFlow
 class Solution:
     def __init__(self, system: System):
         self.system = system
-        self.ybus = YbusFormation(self.system)
-        self.ybus = self.ybus.ymatrix
-        self.system.ybus = self.ybus
+        self.ybusobj = YbusFormation(self.system)
+        self.ybus = self.ybusobj.ymatrix
         self.bus_voltages = []
         self.pf = PowerFlow(self.ybus, self.system)
 

@@ -5,7 +5,7 @@ class Geometry:
         self.dab = cmath.sqrt((ax-bx)**2 - (ay - by)**2)
         self.dbc = cmath.sqrt((bx-cx)**2 - (by - cy)**2)
         self.dca = cmath.sqrt((cx - ax) ** 2 - (cy - ay) ** 2)
-        self.deq = (self.dab * self.dbc * self.dca)**(1/3)
+        self.deq = (self.dab * self.dbc * self.dca)**(1/2)
 
     def getdab(self):
         return self.dab
